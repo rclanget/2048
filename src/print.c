@@ -101,20 +101,48 @@ SDL_Renderer *print_case(SDL_Renderer *renderer, int value, int xcase, int ycase
   textrect.x = textx; textrect.y = 55 + (160 * ycase); textrect.w = w; textrect.h = h;
   SDL_RenderCopy(renderer, message, NULL, &textrect);
   return (renderer);
-
 }
 
-void 	print_map(t_map *map, TTF_Font *police, SDL_Renderer *renderer)
+SDL_Renderer *print_score(SDL_Renderer *renderer)
 {
+	SDL_Surface   *texte = NULL;
+	SDL_Texture   *message = NULL;
+	SDL_Rect textrect;
+	int w = 0;
+	int h = 0;
+	SDL_Color     couleurNoire = {0, 0, 0};
+	TTF_Font *police;
 
+	police = TTF_OpenFont("police/elegant.ttf", 40);
+	texte = TTF_RenderText_Blended(police, "score:", couleurNoire);
+	message = SDL_CreateTextureFromSurface(renderer, texte);
+	SDL_QueryTexture(message, NULL, NULL, &w, &h);
+	textrect.x = 20; textrect.y = 650; textrect.w = w; textrect.h = h;
+	SDL_RenderCopy(renderer, message, NULL, &textrect);
 
+	texte = TTF_RenderText_Blended(police, ft_itoa(gscore), couleurNoire);
+	message = SDL_CreateTextureFromSurface(renderer, texte);
+	SDL_QueryTexture(message, NULL, NULL, &w, &h);
+	textrect.x = 115; textrect.y = 653; textrect.w = w; textrect.h = h;
+	SDL_RenderCopy(renderer, message, NULL, &textrect);
+
+	TTF_CloseFont(police);
+	return (renderer);
+}
+
+void 	print_map(t_map *map, SDL_Renderer *renderer)
+{
+	TTF_Font *police;
+
+	police = TTF_OpenFont("police/elegant.ttf", 70);
     SDL_SetRenderDrawColor(renderer, 100, 100, 100, 1);
     SDL_RenderClear(renderer);
-
 	while (map)
 	{
 		renderer = print_case(renderer, map->value, map->x, map->y, police);
 		map = map->next;
 	}
+	TTF_CloseFont(police);
+	renderer = print_score(renderer);
     SDL_RenderPresent(renderer);
 }

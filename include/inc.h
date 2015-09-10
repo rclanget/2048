@@ -10,7 +10,7 @@
 #include <time.h>
 
 #define WIDTH 		650
-#define HEIGHT 		650
+#define HEIGHT 		700
 
 // Colors
 #define COLOR2 		255, 252, 25
@@ -63,6 +63,6 @@ char				*ft_strdup(const char *s1);
 int 				init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **renderer);
 SDL_Renderer 		*define_color(SDL_Renderer *renderer, int value);
 SDL_Renderer 		*print_case(SDL_Renderer *renderer, int value, int xcase, int ycase, TTF_Font *police);
-void 				print_map(t_map *map, TTF_Font *police, SDL_Renderer *renderer);
+void 				print_map(t_map *map, SDL_Renderer *renderer);
 
 #endif

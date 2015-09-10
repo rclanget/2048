@@ -182,7 +182,6 @@ int 	main(void)
 {
 	t_map	*map;
 	char 	str[20];
-	TTF_Font    *police = NULL;
 	SDL_Window    *window = NULL;
 	SDL_Surface   *screenSurface = NULL;
 	SDL_Renderer  *renderer = NULL;
@@ -192,12 +191,12 @@ int 	main(void)
 	gscore = 0;
 	map = NULL;
 	map = create_map(map);
-	if (init(&window, &screenSurface, &renderer) && (police = TTF_OpenFont("police/elegant.ttf", 70)))
+	if (init(&window, &screenSurface, &renderer))
   	{
   		quit = 0;
-		while (42)
+		while (42 && !quit)
 		{
-	        print_map(map, police, renderer);
+	        print_map(map, renderer);
 			while(SDL_PollEvent(&e) == 0)
 				;
 			//User requests quit
@@ -222,12 +221,9 @@ int 	main(void)
 			gmove = 0;
 			if (!status_game(map))
 				break;
-			printf("SCORE: %d\n", gscore);
 		}
 		// Destroy window
 		SDL_DestroyWindow(window);
-		//Close TTF Font 
-		TTF_CloseFont(police);
 		//Quit TTF
 		TTF_Quit();
 		// Quit SDL
