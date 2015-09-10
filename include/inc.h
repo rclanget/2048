@@ -24,10 +24,11 @@
 #define COLOR512 	188, 198, 108
 #define COLOR1024 	71, 50, 252
 #define COLOR2048 	255, 27, 9
-#define COLOREMPTY 	0, 0, 0
+#define COLOREMPTY 	189, 189, 189
 
 int 				gscore;
 int 				gmove;
+int 				gstat;
 
 typedef struct 		s_map
 {
@@ -56,9 +57,12 @@ t_map				*move_right(t_map *map);
 t_map				*move_up(t_map *map);
 t_map				*move_down(t_map *map);
 t_map 				*unlock(t_map *map);
-void 				print_map(t_map *map);
 char				*ft_itoa(int n);
 char				*ft_strcpy(char *dest, const char *src);
 char				*ft_strdup(const char *s1);
+int 				init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **renderer);
+SDL_Renderer 		*define_color(SDL_Renderer *renderer, int value);
+SDL_Renderer 		*print_case(SDL_Renderer *renderer, int value, int xcase, int ycase, TTF_Font *police);
+void 				print_map(t_map *map, TTF_Font *police, SDL_Renderer *renderer);
 
 #endif

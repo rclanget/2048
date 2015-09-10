@@ -20,13 +20,16 @@ int 	status_game(t_map *map)
 
 	head = map;
 	i = 0;
+	gstat = 0;
 	while (head->next)
 	{
 		if (head->value < 0)
 			i++;
+		else if (head->value == 2048)
+			gstat == 1;
 		head = head->next;
 	}
-	return (gscore >= 2048 ? 0 : i);
+	return (gstat == 1 ? 0 : i);
 }
 
 int 	check_free_place(t_map *map)
@@ -63,28 +66,6 @@ t_map 	*put_rand_value(t_map *map, int pos)
 	else
 		head->value = (rand() % 2 == 0 ? 2 : 4);
 	return (map);
-}
-
-void 	print_map(t_map *map)
-{
-	int i;
-
-	i = 0;
-	while (map)
-	{
-		if (map->value < 0)
-			printf("[-]");
-		else
-			printf("[%d]", map->value);
-		if (i++ == 3)
-		{
-			printf("\n");
-			i = 0;
-		}
-		else
-			printf("%s", map->value > 9 ? "  " : " ");
-		map = map->next;
-	}
 }
 
 t_map 	*find_down(t_map *map)
@@ -201,30 +182,57 @@ int 	main(void)
 {
 	t_map	*map;
 	char 	str[20];
-
+	TTF_Font    *police = NULL;
+	SDL_Window    *window = NULL;
+	SDL_Surface   *screenSurface = NULL;
+	SDL_Renderer  *renderer = NULL;
+	SDL_Event   e;
+	int       quit;
+	
 	gscore = 0;
 	map = NULL;
 	map = create_map(map);
-	while (42)
-	{
-		print_map(map);
-		scanf("%s", str);
-		if (str[0] == 'z')
-			map = move_up(fusion_up(unlock(map)));
-		else if (str[0] == 'q')
-			map = move_left(fusion_left(unlock(map)));
-		else if (str[0] == 's')
-			map = move_right(fusion_right(unlock(map)));
-		else if (str[0] == 'w')
-			map = move_down(fusion_down(unlock(map)));
-		if (gmove)
-			put_rand_value(map, check_free_place(map));
-		gmove = 0;
-		if (!status_game(map))
-			break;
-		printf("SCORE: %d\n", gscore);
+	if (init(&window, &screenSurface, &renderer) && (police = TTF_OpenFont("police/elegant.ttf", 70)))
+  	{
+  		quit = 0;
+		while (42)
+		{
+	        print_map(map, police, renderer);
+			while(SDL_PollEvent(&e) == 0)
+				;
+			//User requests quit
+	        if(e.type == SDL_QUIT)
+	        {
+	            printf("Click on \"X\"\n");
+	            quit = 1;
+	        }
+	        if (e.type == SDL_KEYDOWN)
+	        {
+	        	if (e.key.keysym.sym == SDLK_UP)
+					map = move_up(fusion_up(unlock(map)));
+	        	else if (e.key.keysym.sym == SDLK_DOWN)
+					map = move_down(fusion_down(unlock(map)));
+	        	else if (e.key.keysym.sym == SDLK_LEFT)
+					map = move_left(fusion_left(unlock(map)));
+	        	else if (e.key.keysym.sym == SDLK_RIGHT)
+					map = move_right(fusion_right(unlock(map)));
+	        }
+			if (gmove)
+				put_rand_value(map, check_free_place(map));
+			gmove = 0;
+			if (!status_game(map))
+				break;
+			printf("SCORE: %d\n", gscore);
+		}
+		// Destroy window
+		SDL_DestroyWindow(window);
+		//Close TTF Font 
+		TTF_CloseFont(police);
+		//Quit TTF
+		TTF_Quit();
+		// Quit SDL
+		SDL_Quit();
 	}
-
-	printf("%s\n", (gscore >= 2048 ? "Bravo" : "Game-over"));
+	printf("%s\n", (gstat == 1 ? "Bravo" : "Game-over"));
 	return (0);
 }
