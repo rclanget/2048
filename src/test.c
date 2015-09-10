@@ -1,9 +1,5 @@
 // Compilation: gcc myfile.c -w -lSDL2 -lSDL2-image
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <string.h>
+
 #include "inc.h"
 
 int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **renderer)
@@ -52,35 +48,75 @@ int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **render
   return (status);
 }
 
-int loadmedia(void)
+SDL_Renderer *define_color(SDL_Renderer *renderer, int value)
 {
-  int         status;
+  if (value < 2)
+    SDL_SetRenderDrawColor(renderer, COLOREMPTY, 1);
+  else if (value == 2)
+    SDL_SetRenderDrawColor(renderer, COLOR2, 1);
+  else if (value == 4)
+    SDL_SetRenderDrawColor(renderer, COLOR4, 1);
+  else if (value == 8)
+    SDL_SetRenderDrawColor(renderer, COLOR8, 1);
+  else if (value == 16)
+    SDL_SetRenderDrawColor(renderer, COLOR16, 1);
+  else if (value == 32)
+    SDL_SetRenderDrawColor(renderer, COLOR32, 1);
+  else if (value == 64)
+    SDL_SetRenderDrawColor(renderer, COLOR64, 1);
+  else if (value == 128)
+    SDL_SetRenderDrawColor(renderer, COLOR128, 1);
+  else if (value == 256)
+    SDL_SetRenderDrawColor(renderer, COLOR256, 1);
+  else if (value == 512)
+    SDL_SetRenderDrawColor(renderer, COLOR512, 1);
+  else if (value == 1024)
+    SDL_SetRenderDrawColor(renderer, COLOR1024, 1);
+  else
+    SDL_SetRenderDrawColor(renderer, COLOR2048, 1);
+  return (renderer);
+}
 
-  status = 1;
-  return (status);
+SDL_Renderer *print_case(SDL_Renderer *renderer, int value, int xcase, int ycase, TTF_Font *police)
+{
+  int x;
+  int y;
+  SDL_Surface   *texte = NULL;
+  SDL_Texture   *message = NULL;
+  SDL_Rect textrect;
+  int w = 0;
+  int h = 0;
+  SDL_Color     couleurNoire = {0, 0, 0};
+
+  int textx = 20 + (15 * (4 - ft_nbrlen(value))) + (160 * xcase);
+
+  renderer = define_color(renderer, value);
+  x = 10 + (160 * xcase);
+  y = 10 + (160 * ycase);
+  SDL_Rect fillRect = {x, y, 150, 150};
+  SDL_RenderFillRect(renderer, &fillRect);
+
+   /* Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) */
+  texte = TTF_RenderText_Blended(police, ft_itoa(value), couleurNoire);
+  message = SDL_CreateTextureFromSurface(renderer, texte);
+  SDL_QueryTexture(message, NULL, NULL, &w, &h);
+  textrect.x = textx; textrect.y = 55 + (160 * ycase); textrect.w = w; textrect.h = h;
+  SDL_RenderCopy(renderer, message, NULL, &textrect);
+  return (renderer);
+
 }
 
 int main(int argc, char** argv)
 {
   SDL_Window    *window = NULL;
   SDL_Surface   *screenSurface = NULL;
-  SDL_Surface   *texte = NULL;
-  SDL_Texture   *message = NULL;
   SDL_Event     e;
   int           quit;
   SDL_Renderer  *renderer = NULL;
   TTF_Font      *police = NULL;
-  SDL_Color     couleurNoire = {0, 0, 0};
-  SDL_Rect      position;
-
-  SDL_Rect textrect;
-  int w = 0;
-  int h = 0;
 
   if (init(&window, &screenSurface, &renderer) && (police = TTF_OpenFont("police/elegant.ttf", 70)))
   {
-    if (loadmedia())
-    {
       //Main loop flag
       quit = 0;
       //While application is running
@@ -101,34 +137,55 @@ int main(int argc, char** argv)
         SDL_RenderClear(renderer);
 
         // Render red filled quad
-        SDL_Rect fillRect = {10, 10, 150, 150};
-        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 1);
-        SDL_RenderFillRect(renderer, &fillRect);
-        // Render red filled quad
-        SDL_Rect fillRect2 = {170, 10, 150, 150};
-        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 1);
-        SDL_RenderFillRect(renderer, &fillRect2);
+        renderer = print_case(renderer, 2, 0, 0, police);
 
         // Render red filled quad
-        SDL_Rect fillRect3 = {330, 10, 150, 150};
-        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 1);
-        SDL_RenderFillRect(renderer, &fillRect3);
+        renderer = print_case(renderer, 16, 1, 0, police);
 
         // Render red filled quad
-        SDL_Rect fillRect4 = {490, 10, 150, 150};        
-        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 1);
-        SDL_RenderFillRect(renderer, &fillRect4);
+        renderer = print_case(renderer, 512, 2, 0, police);
 
-       /* Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) */
-        texte = TTF_RenderText_Blended(police, "2048", couleurNoire);
-        message = SDL_CreateTextureFromSurface(renderer, texte);
-        SDL_QueryTexture(message, NULL, NULL, &w, &h);
-        textrect.x = 0; textrect.y = 55; textrect.w = w; textrect.h = h;
-        SDL_RenderCopy(renderer, message, NULL, &textrect);
+        // Render red filled quad
+        renderer = print_case(renderer, 2048, 3, 0, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2, 0, 1, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 16, 1, 1, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 512, 2, 1, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2048, 3, 1, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2, 0, 2, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 16, 1, 2, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 512, 2, 2, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2048, 3, 2, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2, 0, 3, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 16, 1, 3, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 512, 2, 3, police);
+
+        // Render red filled quad
+        renderer = print_case(renderer, 2048, 3, 3, police);
 
         SDL_RenderPresent(renderer);
       }
-    }
   }
   // Destroy window
   SDL_DestroyWindow(window);
