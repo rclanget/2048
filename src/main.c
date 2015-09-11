@@ -122,22 +122,19 @@ t_map 	*lst_add(t_map *map, int rand_val, int rand_pos)
 	new_map->up = NULL;
 	new_map->down = NULL;
 	position += 1;
+	head_map = map;
 	x++;
 	if (x == 4)
 	{
 		x = 0;
 		y++;
 	}
-	head_map = map;
-	if (map != NULL)
-	{
-		while (head_map->next)
-			head_map = head_map->next;
-		new_map->prev = head_map;
-		head_map->next = new_map;
-	}
-	else
+	if (map == NULL)
 		return (new_map);
+	while (head_map->next)
+		head_map = head_map->next;
+	new_map->prev = head_map;
+	head_map->next = new_map;
 	return (map);
 }
 
@@ -181,15 +178,17 @@ t_map 	*create_map(t_map *map)
 int 	main(void)
 {
 	t_map	*map;
-	char 	str[20];
-	SDL_Window    *window = NULL;
-	SDL_Surface   *screenSurface = NULL;
-	SDL_Renderer  *renderer = NULL;
+	SDL_Window    *window;
+	SDL_Surface   *screenSurface;
+	SDL_Renderer  *renderer;
 	SDL_Event   e;
 	int       quit;
 	
 	gscore = 0;
 	map = NULL;
+	window = NULL;
+	screenSurface = NULL;
+	renderer = NULL;
 	map = create_map(map);
 	if (init(&window, &screenSurface, &renderer))
   	{
@@ -199,13 +198,9 @@ int 	main(void)
 	        print_map(map, renderer);
 			while(SDL_PollEvent(&e) == 0)
 				;
-			//User requests quit
 	        if(e.type == SDL_QUIT)
-	        {
-	            printf("Click on \"X\"\n");
 	            quit = 1;
-	        }
-	        if (e.type == SDL_KEYDOWN)
+	        else if (e.type == SDL_KEYDOWN)
 	        {
 	        	if (e.key.keysym.sym == SDLK_UP)
 					map = move_up(fusion_up(unlock(map)));
@@ -229,6 +224,6 @@ int 	main(void)
 		// Quit SDL
 		SDL_Quit();
 	}
-	printf("%s\n", (gstat == 1 ? "Bravo" : "Game-over"));
+	printf("%s\nScore: %d\n", (gstat == 1 ? "Bravo" : "Game-over"), gscore);
 	return (0);
 }

@@ -1,8 +1,9 @@
 #include "inc.h"
 
-int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **renderer)
+int          init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **renderer)
 {
   int status;
+  int imgFlags = IMG_INIT_PNG;
 
   status = 1;
   if ((SDL_Init(SDL_INIT_VIDEO) < 0) || TTF_Init() == -1)
@@ -12,7 +13,6 @@ int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **render
   }
   else
   {
-    // Create window
     *window = SDL_CreateWindow("SDL Tuto", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
     if (*window == NULL)
     {
@@ -21,7 +21,6 @@ int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **render
     }
     else
     {
-      // Create renderer
       *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
       if (*renderer == NULL)
       {
@@ -30,11 +29,7 @@ int init(SDL_Window **window, SDL_Surface **screenSurface, SDL_Renderer **render
       }
       else
       {
-        // Initialize renderer color
         SDL_SetRenderDrawColor(*renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-        //Initialize PNG loading
-        int imgFlags = IMG_INIT_PNG;
         if( !( IMG_Init( imgFlags ) & imgFlags ) )
         {
             printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
@@ -77,24 +72,21 @@ SDL_Renderer *define_color(SDL_Renderer *renderer, int value)
 
 SDL_Renderer *print_case(SDL_Renderer *renderer, int value, int xcase, int ycase, TTF_Font *police)
 {
-  int x;
-  int y;
-  SDL_Surface   *texte = NULL;
-  SDL_Texture   *message = NULL;
-  SDL_Rect textrect;
-  int w = 0;
-  int h = 0;
-  SDL_Color     couleurNoire = {0, 0, 0};
-
-  int textx = 20 + (15 * (4 - ft_nbrlen(value))) + (160 * xcase);
+  int          x;
+  int          y;
+  SDL_Surface  *texte = NULL;
+  SDL_Texture  *message = NULL;
+  SDL_Rect     textrect;
+  int          w = 0;
+  int          h = 0;
+  int          textx = 20 + (15 * (4 - ft_nbrlen(value))) + (160 * xcase);
+  SDL_Color    couleurNoire = {0, 0, 0};
 
   renderer = define_color(renderer, value);
   x = 10 + (160 * xcase);
   y = 10 + (160 * ycase);
   SDL_Rect fillRect = {x, y, 150, 150};
   SDL_RenderFillRect(renderer, &fillRect);
-
-   /* Écriture du texte dans la SDL_Surface texte en mode Blended (optimal) */
   texte = TTF_RenderText_Blended(police, (value < 2 ? "" : ft_itoa(value)), couleurNoire);
   message = SDL_CreateTextureFromSurface(renderer, texte);
   SDL_QueryTexture(message, NULL, NULL, &w, &h);
@@ -107,11 +99,11 @@ SDL_Renderer *print_score(SDL_Renderer *renderer)
 {
 	SDL_Surface   *texte = NULL;
 	SDL_Texture   *message = NULL;
-	SDL_Rect textrect;
-	int w = 0;
-	int h = 0;
+	SDL_Rect      textrect;
+	int           w = 0;
+	int           h = 0;
 	SDL_Color     couleurNoire = {0, 0, 0};
-	TTF_Font *police;
+	TTF_Font      *police;
 
 	police = TTF_OpenFont("police/elegant.ttf", 40);
 	texte = TTF_RenderText_Blended(police, "score:", couleurNoire);
@@ -119,24 +111,22 @@ SDL_Renderer *print_score(SDL_Renderer *renderer)
 	SDL_QueryTexture(message, NULL, NULL, &w, &h);
 	textrect.x = 20; textrect.y = 650; textrect.w = w; textrect.h = h;
 	SDL_RenderCopy(renderer, message, NULL, &textrect);
-
 	texte = TTF_RenderText_Blended(police, ft_itoa(gscore), couleurNoire);
 	message = SDL_CreateTextureFromSurface(renderer, texte);
 	SDL_QueryTexture(message, NULL, NULL, &w, &h);
 	textrect.x = 115; textrect.y = 653; textrect.w = w; textrect.h = h;
 	SDL_RenderCopy(renderer, message, NULL, &textrect);
-
 	TTF_CloseFont(police);
 	return (renderer);
 }
 
-void 	print_map(t_map *map, SDL_Renderer *renderer)
+void	       print_map(t_map *map, SDL_Renderer *renderer)
 {
 	TTF_Font *police;
 
 	police = TTF_OpenFont("police/elegant.ttf", 70);
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 1);
-    SDL_RenderClear(renderer);
+  SDL_SetRenderDrawColor(renderer, 100, 100, 100, 1);
+  SDL_RenderClear(renderer);
 	while (map)
 	{
 		renderer = print_case(renderer, map->value, map->x, map->y, police);
@@ -144,5 +134,5 @@ void 	print_map(t_map *map, SDL_Renderer *renderer)
 	}
 	TTF_CloseFont(police);
 	renderer = print_score(renderer);
-    SDL_RenderPresent(renderer);
+  SDL_RenderPresent(renderer);
 }
